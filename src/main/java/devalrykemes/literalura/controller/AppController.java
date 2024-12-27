@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 
 import devalrykemes.literalura.service.GutendexAPI;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 @Controller
@@ -22,13 +24,13 @@ public class AppController {
 
     private Scanner sc = new Scanner(System.in);
 
-    public void SearchBookByTitle() {
+    public void searchBookByTitle() {
         Book newBook = new Book();
 
         System.out.println("\n Digite o título do livro a buscar abaixo:");
 
         try {
-            JsonObject json = gutendexAPI.RequestBooksByTitle(sc.nextLine());
+            JsonObject json = gutendexAPI.requestBooksByTitle(sc.nextLine());
             json.getAsJsonObject()
                     .get("results")
                     .getAsJsonArray()
@@ -87,7 +89,28 @@ public class AppController {
         }
     }
 
-    public void ReturnBooksInDB() {
-        System.out.println(bookRepository.findAll());
+    public void returnBooksInDb() {
+
+    }
+
+    public void returnAuthorsInDb() {
+
+    }
+
+    public void returnAuthorsInYear() {
+
+        System.out.println("\n Digite o um ano para buscar autor salvo no banco de dados: (ex: 1789)");
+
+        int ano = sc.nextInt();
+
+        try {
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void returnBooksInLanguage() {
+
     }
 }

@@ -17,7 +17,7 @@ public class LiterAluraApplication implements CommandLineRunner {
     private String opcoes = "\n1 - Pesquise o livro pelo título. \n"
             + "2 - Listar Livros Registrados. \n"
             + "3 - Listar Autores Registrados. \n"
-            + "4 - Listar Autores vivos em um Intervalo de anos. \n"
+            + "4 - Listar Autores Registrados vivos em um ano. \n"
             + "5 - Listar livros registrados de um determinado idioma. \n"
             + "6 - Limpar Registros de Livros. \n"
             + "0 - Sair \n";
@@ -33,11 +33,11 @@ public class LiterAluraApplication implements CommandLineRunner {
             select = sc.nextInt();
             switch (select) {
                 case 1: {
-                    controller.SearchBookByTitle();
+                    controller.searchBookByTitle();
                     break;
                 }
                 case 2: {
-                    controller.ReturnBooksInDB();
+                    controller.returnBooksInDB();
                     break;
                 }
                 case 3: {
@@ -45,7 +45,7 @@ public class LiterAluraApplication implements CommandLineRunner {
                     break;
                 }
                 case 4: {
-                    // logica do controller
+                    controller.returnAuthorsInInterval();
                     break;
                 }
                 case 5: {

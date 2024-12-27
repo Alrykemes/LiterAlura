@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    public List<Book> getAllBooks();
+    //public List<Book> getAllBooks();
 
-    public List<Author> getAllAuthors();
+    //public List<Author> getAllAuthors();
 
-    List<Book> getAllBooksByLanguages(String languages);
+    //List<Book> getAllBooksByLanguages(String languages);
 
-    public void dropDB();
+    //public void dropDB();
 }
