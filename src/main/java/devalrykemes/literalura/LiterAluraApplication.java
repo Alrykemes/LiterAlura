@@ -1,6 +1,6 @@
 package devalrykemes.literalura;
 
-import devalrykemes.literalura.controller.ApiController;
+import devalrykemes.literalura.controller.AppController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class LiterAluraApplication implements CommandLineRunner {
 
     @Autowired
-    ApiController controller;
+    AppController controller;
 
     private String opcoes = "\n1 - Pesquise o livro pelo título. \n"
             + "2 - Listar Livros Registrados. \n"
@@ -37,7 +37,7 @@ public class LiterAluraApplication implements CommandLineRunner {
                     break;
                 }
                 case 2: {
-                    // logica do controller
+                    controller.ReturnBooksInDB();
                     break;
                 }
                 case 3: {
