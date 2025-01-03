@@ -37,23 +37,23 @@ public class LiterAluraApplication implements CommandLineRunner {
                     break;
                 }
                 case 2: {
-                    controller.returnBooksInDB();
+                    controller.returnBooksInDb();
                     break;
                 }
                 case 3: {
-                    // logica do controller
+                    controller.returnAuthorsInDb();
                     break;
                 }
                 case 4: {
-                    controller.returnAuthorsInInterval();
+                    controller.returnAuthorsInYear();
                     break;
                 }
                 case 5: {
-                    // logica do controller
+                    controller.returnBooksInLanguage();
                     break;
                 }
                 case 6: {
-                    // logica do controller
+                    controller.cleanDb();
                     break;
                 }
                 case 0: {

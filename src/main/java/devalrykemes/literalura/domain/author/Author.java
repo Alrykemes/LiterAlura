@@ -2,6 +2,8 @@ package devalrykemes.literalura.domain.author;
 
 import jakarta.persistence.*;
 
+import java.util.stream.Collectors;
+
 @Entity
 @Table(name = "Author")
 public class Author {

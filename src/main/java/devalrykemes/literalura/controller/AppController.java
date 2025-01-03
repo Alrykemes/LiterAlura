@@ -3,14 +3,11 @@ package devalrykemes.literalura.controller;
 import com.google.gson.JsonObject;
 import devalrykemes.literalura.domain.author.Author;
 import devalrykemes.literalura.domain.book.Book;
-import devalrykemes.literalura.repositories.BookRepository;
+import devalrykemes.literalura.service.AuthorService;
+import devalrykemes.literalura.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-
 import devalrykemes.literalura.service.GutendexAPI;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 @Controller
@@ -19,7 +16,9 @@ public class AppController {
     @Autowired
     GutendexAPI gutendexAPI;
     @Autowired
-    BookRepository bookRepository;
+    BookService bookService;
+    @Autowired
+    AuthorService authorService;
 
 
     private Scanner sc = new Scanner(System.in);
@@ -31,70 +30,78 @@ public class AppController {
 
         try {
             JsonObject json = gutendexAPI.requestBooksByTitle(sc.nextLine());
-            json.getAsJsonObject()
+            json = json.getAsJsonObject()
                     .get("results")
                     .getAsJsonArray()
-                    .forEach(book -> {
-                        book.getAsJsonObject()
-                                .get("authors")
-                                .getAsJsonArray()
-                                .forEach(author -> {
-                                    newBook.getAuthors().add(
-                                            new Author(
-                                                    author.getAsJsonObject().get("name").toString(),
-                                            Integer.parseInt(author.getAsJsonObject().get("birth_year").toString()),
-                                            Integer.parseInt(author.getAsJsonObject().get("death_year").toString())
-                                            )
-                                    );
-                                });
+                    .get(0)
+                    .getAsJsonObject();
 
-                        newBook.setTitle(book.getAsJsonObject().get("title").getAsString());
-                        newBook.setLanguages(book.getAsJsonObject().get("languages").getAsJsonArray().get(0).getAsString());
-                        book.getAsJsonObject()
-                                .get("bookshelves")
-                                .getAsJsonArray()
-                                .asList()
-                                .forEach(bookshelve -> newBook.getGenres().add(
-                                        bookshelve.toString().replace("Browsing: ", "")
-                                ));
-                        newBook.setDowloads(book.getAsJsonObject().get("download_count").getAsLong());
+            json.get("authors")
+                    .getAsJsonArray()
+                    .forEach(author -> {
+                        newBook.getAuthors().add(
+                                new Author(
+                                        author.getAsJsonObject().get("name").toString(),
+                                        Integer.parseInt(author.getAsJsonObject().get("birth_year").toString()),
+                                        Integer.parseInt(author.getAsJsonObject().get("death_year").toString())
+                                )
+                        );
+                    });
 
-                        System.out.println(newBook);
-            });
+            newBook.setTitle(json.get("title").getAsString());
+            newBook.setLanguages(json.get("languages").getAsJsonArray().get(0).getAsString());
+            json.get("bookshelves")
+                    .getAsJsonArray()
+                    .asList()
+                    .forEach(bookshelve -> newBook.getGenres().add(
+                            bookshelve.toString().replace("Browsing: ", "")
+                    ));
+            newBook.setDowloads(json.get("download_count").getAsLong());
+            System.out.println(newBook);
 
-            String savebook = "";
+            if (bookService.getTitles().contains(newBook.getTitle())) {
+                System.out.println("Livro existente no banco de dados!");
+            } else {
+                while (true) {
+                    String savebook = "";
 
-            while (true) {
-                System.out.println("Gostaria de salvar o livro pesquisado? (y/n)");
+                    System.out.println("Gostaria de salvar o livro pesquisado? (y/n)");
 
-                savebook = sc.nextLine();
-                savebook = savebook.toLowerCase();
+                    savebook = sc.nextLine();
+                    savebook = savebook.toLowerCase();
 
-                if (savebook.equalsIgnoreCase("y")) {
-                    // logica para salvar no bd
-                    bookRepository.save(newBook);
-                    System.out.println("Livro salvo!");
-                    break;
-                } else if (savebook.equalsIgnoreCase("n")) {
-                    // nada kkkk
-                    System.out.println("Livro não salvo!");
-                    break;
-                } else {
-                    System.out.println("Opção Invalida!");
+                    if (savebook.equalsIgnoreCase("y")) {
+                        bookService.save(newBook);
+                        System.out.println("Livro salvo!");
+                        break;
+                    } else if (savebook.equalsIgnoreCase("n")) {
+                        // nada kkkk
+                        System.out.println("Livro não salvo!");
+                        break;
+                    } else {
+                        System.out.println("Opção Invalida!");
+                    }
                 }
             }
-
         } catch (Exception e) {
             System.out.println("erro: " + e.getMessage());
         }
     }
 
     public void returnBooksInDb() {
-
+        try {
+            bookService.findAll().forEach(System.out::println);
+        } catch (Exception e) {
+            System.out.println("erro: " + e.getMessage());
+        }
     }
 
     public void returnAuthorsInDb() {
-
+        try {
+            authorService.findAll().forEach(System.out::println);
+        } catch (Exception e) {
+            System.out.println("erro: " + e.getMessage());
+        }
     }
 
     public void returnAuthorsInYear() {
@@ -103,14 +110,50 @@ public class AppController {
 
         int ano = sc.nextInt();
 
-        try {
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (ano < 0 || ano > 2025) {
+            System.out.println("ano invalido!");
+        } else {
+            try {
+                authorService.findByYearAlive(ano).forEach(System.out::println);
+            } catch (Exception e) {
+                System.out.println("erro: " + e.getMessage());
+            }
         }
     }
 
     public void returnBooksInLanguage() {
+            System.out.println("Digite um idioma para buscar livro salvo no banco de dados: (ex: en)\n");
+            String language = sc.nextLine();
+        try {
+            bookService.findAllBooksByLanguage(language.toLowerCase()).forEach(System.out::println);
+        } catch (Exception e) {
+                System.out.println("erro: " + e.getMessage());
+        }
+    }
 
+    public void cleanDb() {
+        while (true) {
+            String option = "";
+
+            System.out.println("Gostaria de limpar o banco de dados? (y/n)");
+
+            option = sc.nextLine();
+
+            if (option.equalsIgnoreCase("y")) {
+                try {
+                    bookService.cleanDb();
+                } catch (Exception e) {
+                    System.out.println("erro: " + e.getMessage());
+                }
+                System.out.println("Dados apagados, banco de dados limpo!");
+                break;
+            } else if (option.equalsIgnoreCase("n")) {
+                // nada kkkk
+                System.out.println("Dados apagados mantidos, banco de dados não limpo!");
+                break;
+            } else {
+                System.out.println("Opção Invalida!");
+            }
+        }
     }
 }

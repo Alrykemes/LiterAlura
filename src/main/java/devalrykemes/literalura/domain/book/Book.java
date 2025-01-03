@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "books")
+@Table(name = "book")
 public class Book {
 
     @Id
@@ -54,6 +54,14 @@ public class Book {
 
     public List<Author> getAuthors() {
         return authors;
+    }
+
+    public void newListInAuthors() {
+        this.authors = new ArrayList<>();
+    }
+
+    public void newListInGenres() {
+        this.genres = new ArrayList<>();
     }
 
     public List<String> getGenres() {
